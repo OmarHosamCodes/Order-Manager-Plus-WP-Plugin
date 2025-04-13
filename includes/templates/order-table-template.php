@@ -71,93 +71,94 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
             </thead>
             <tbody>
                 <?php
-                while ($orders->have_posts()) {
-                    $orders->the_post();
-                    $order = wc_get_order(get_the_ID());
-                    if (!$order)
-                        continue;
+                if (!empty($orders->posts)) {
+                    // Use custom loop for our orders object
+                    foreach ($orders->posts as $order) {
+                        if (!$order instanceof WC_Order) {
+                            continue;
+                        }
 
-                    $order_date = $order->get_date_created();
-                    $is_cancelled = ($order->get_status() === 'cancelled');
-                    $row_class = $is_cancelled ? 'omp-order-cancelled' : '';
-                    ?>
-                    <tr class="<?php echo esc_attr($row_class); ?>">
-                        <td class="omp-checkbox-column">
-                            <input type="checkbox" class="omp-order-checkbox"
-                                value="<?php echo esc_attr($order->get_id()); ?>" />
-                        </td>
-                        <td>
-                            <?php echo esc_html($order->get_order_number()); ?>
-                        </td>
-                        <td>
-                            <?php
-                            $date_formatter = new OMP_Date_Formatter();
-                            echo esc_html($date_formatter->format_date($order_date, isset($settings['order_time_format']) ? $settings['order_time_format'] : 'ago'));
-                            ?>
-                        </td>
-                        <td>
-                            <span class="omp-order-status omp-status-<?php echo esc_attr($order->get_status()); ?>">
-                                <?php echo esc_html(wc_get_order_status_name($order->get_status())); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?php echo esc_html($order->get_formatted_billing_full_name() ?: __('Guest', 'order-manager-plus')); ?>
-                        </td>
-                        <td>
-                            <?php echo esc_html($order->get_billing_email()); ?>
-                        </td>
-                        <td>
-                            <?php
-                            $address_parts = array_filter([
-                                esc_html($order->get_billing_address_1()),
-                                esc_html($order->get_billing_address_2()),
-                                esc_html($order->get_billing_city()),
-                                esc_html(WC()->countries->get_states($order->get_billing_country())[$order->get_billing_state()] ?? ''),
-                                esc_html($order->get_billing_postcode()),
-                                esc_html(WC()->countries->get_countries()[$order->get_billing_country()] ?? '')
-                            ]);
-                            echo implode('<br>', $address_parts);
-                            ?>
-                        </td>
-                        <td>
-                            <?php
-                            foreach ($order->get_items() as $item) {
-                                echo esc_html($item->get_name()) . ' × ' . esc_html($item->get_quantity()) . '<br>';
-                            }
-                            ?>
-                        </td>
-                        <td>
-                            <?php echo esc_html($order->get_billing_phone()); ?>
-                        </td>
-                        <td>
-                            <?php echo esc_html($order->get_customer_note()); ?>
-                        </td>
-                        <td>
-                            <?php echo wp_kses_post($order->get_formatted_order_total()); ?>
-                        </td>
-                        <td class="omp-actions-column">
-                            <?php
-                            // Add invoice action if enabled
-                            if ($enable_invoice) {
-                                echo '<a href="' . esc_url(admin_url('admin.php?page=omp_order_invoice&order_id=' . $order->get_id())) . '" 
-                                         class="omp-button omp-invoice-button" target="_blank">' .
-                                    esc_html__('Invoice', 'order-manager-plus') .
-                                    '</a>';
-                            }
+                        $order_date = $order->get_date_created();
+                        $is_cancelled = ($order->get_status() === 'cancelled');
+                        $row_class = $is_cancelled ? 'omp-order-cancelled' : '';
+                        ?>
+                        <tr class="<?php echo esc_attr($row_class); ?>">
+                            <td class="omp-checkbox-column">
+                                <input type="checkbox" class="omp-order-checkbox"
+                                    value="<?php echo esc_attr($order->get_id()); ?>" />
+                            </td>
+                            <td>
+                                <?php echo esc_html($order->get_order_number()); ?>
+                            </td>
+                            <td>
+                                <?php
+                                $date_formatter = new OMP_Date_Formatter();
+                                echo esc_html($date_formatter->format_date($order_date, isset($settings['order_time_format']) ? $settings['order_time_format'] : 'ago'));
+                                ?>
+                            </td>
+                            <td>
+                                <span class="omp-order-status omp-status-<?php echo esc_attr($order->get_status()); ?>">
+                                    <?php echo esc_html(wc_get_order_status_name($order->get_status())); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <?php echo esc_html($order->get_formatted_billing_full_name() ?: __('Guest', 'order-manager-plus')); ?>
+                            </td>
+                            <td>
+                                <?php echo esc_html($order->get_billing_email()); ?>
+                            </td>
+                            <td>
+                                <?php
+                                $address_parts = array_filter([
+                                    esc_html($order->get_billing_address_1()),
+                                    esc_html($order->get_billing_address_2()),
+                                    esc_html($order->get_billing_city()),
+                                    esc_html(WC()->countries->get_states($order->get_billing_country())[$order->get_billing_state()] ?? ''),
+                                    esc_html($order->get_billing_postcode()),
+                                    esc_html(WC()->countries->get_countries()[$order->get_billing_country()] ?? '')
+                                ]);
+                                echo implode('<br>', $address_parts);
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                foreach ($order->get_items() as $item) {
+                                    echo esc_html($item->get_name()) . ' × ' . esc_html($item->get_quantity()) . '<br>';
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo esc_html($order->get_billing_phone()); ?>
+                            </td>
+                            <td>
+                                <?php echo esc_html($order->get_customer_note()); ?>
+                            </td>
+                            <td>
+                                <?php echo wp_kses_post($order->get_formatted_order_total()); ?>
+                            </td>
+                            <td class="omp-actions-column">
+                                <?php
+                                // Add invoice action if enabled
+                                if ($enable_invoice) {
+                                    echo '<a href="' . esc_url(admin_url('admin.php?page=omp_order_invoice&order_id=' . $order->get_id())) . '" 
+                                             class="omp-button omp-invoice-button" target="_blank">' .
+                                        esc_html__('Invoice', 'order-manager-plus') .
+                                        '</a>';
+                                }
 
-                            // Add edit action if enabled and user has permissions
-                            if ($enable_edit && current_user_can('manage_woocommerce')) {
-                                echo '<a href="' . esc_url(admin_url('admin.php?page=omp_order_edit&order_id=' . $order->get_id())) . '" 
-                                         class="omp-button omp-edit-button">' .
-                                    esc_html__('Edit', 'order-manager-plus') .
-                                    '</a>';
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                    <?php
+                                // Add edit action if enabled and user has permissions
+                                if ($enable_edit && current_user_can('manage_woocommerce')) {
+                                    echo '<a href="' . esc_url(admin_url('admin.php?page=omp_order_edit&order_id=' . $order->get_id())) . '" 
+                                             class="omp-button omp-edit-button">' .
+                                        esc_html__('Edit', 'order-manager-plus') .
+                                        '</a>';
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                        <?php
+                    }
                 }
-                wp_reset_postdata();
                 ?>
             </tbody>
         </table>
@@ -178,11 +179,13 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
 <script>
     jQuery(document).ready(function ($) {
         // Initialize datepickers
-        $('.omp-datepicker').datepicker({
-            dateFormat: 'yy-mm-dd',
-            changeMonth: true,
-            changeYear: true
-        });
+        if ($.fn.datepicker) {
+            $('.omp-datepicker').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true
+            });
+        }
 
         // Handle select all checkboxes
         $('#omp-select-all').on('change', function () {
@@ -221,12 +224,12 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
 
             // If no orders selected and no filters set, show message
             if (orderIds.length === 0 && status === 'any' && !fromDate && !toDate) {
-                alert(omp_i18n.select_orders);
+                alert(omp_i18n?.select_orders || 'Please select at least one order or set filter criteria.');
                 return;
             }
 
             // Show loading state
-            $(this).addClass('omp-loading').text(omp_i18n.exporting);
+            $(this).addClass('omp-loading').text(omp_i18n?.exporting || 'Exporting...');
 
             // Make AJAX request
             $.ajax({
@@ -252,16 +255,16 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
                         link.click();
                         document.body.removeChild(link);
                     } else {
-                        alert(response.data.message || omp_i18n.export_error);
+                        alert(response.data.message || omp_i18n?.export_error || 'Error exporting orders.');
                     }
                 },
                 error: function () {
-                    alert(omp_i18n.export_error);
+                    alert(omp_i18n?.export_error || 'Error exporting orders.');
                 },
                 complete: function () {
                     // Reset button state
-                    $('#omp-export-btn').removeClass('omp-loading').text(omp_i18n.export_selected);
+                    $('#omp-export-btn').removeClass('omp-loading').text(omp_i18n?.export_selected || 'Export Selected');
                 }
             });
         });
-    });
+    });</script>
