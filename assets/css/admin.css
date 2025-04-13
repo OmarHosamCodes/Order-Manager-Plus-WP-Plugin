@@ -1,0 +1,213 @@
+/**
+ * Order Manager Plus - Admin Styles
+ */
+
+/* General Styles */
+.omp-edit-order-wrap {
+	max-width: 1200px;
+	margin: 20px 0;
+}
+
+.omp-order-meta {
+	background: #fff;
+	padding: 15px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	border-left: 4px solid #2c3e50;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Layout */
+.omp-form-sections {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 20px;
+	margin-bottom: 20px;
+}
+
+.omp-form-section {
+	background: #fff;
+	padding: 20px;
+	border-radius: 4px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.omp-form-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin-bottom: 15px;
+}
+
+.omp-form-field {
+	margin-bottom: 15px;
+}
+
+.omp-form-field label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 600;
+}
+
+.omp-form-field input,
+.omp-form-field select,
+.omp-form-field textarea {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.omp-form-field textarea {
+	min-height: 100px;
+}
+
+/* Order Items Table */
+.omp-order-items {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+.omp-order-items th {
+	text-align: left;
+	background: #f5f5f5;
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+}
+
+.omp-order-items td {
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+}
+
+.omp-quantity-input {
+	width: 70px !important;
+	text-align: center;
+}
+
+/* Order Totals */
+.omp-order-totals {
+	width: 350px;
+	margin-left: auto;
+	background: #f9f9f9;
+	padding: 15px;
+	border-radius: 4px;
+}
+
+.omp-total-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 5px 0;
+}
+
+.omp-grand-total {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 2px solid #2c3e50;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+/* Form Actions */
+.omp-form-actions {
+	margin-top: 20px;
+	display: flex;
+	gap: 10px;
+}
+
+/* Settings Page */
+.omp-admin-settings .form-table th {
+	width: 250px;
+}
+
+.omp-admin-settings .form-table label {
+	display: inline-block;
+	margin-right: 15px;
+}
+
+.omp-shortcode-example {
+	background: #f5f5f5;
+	padding: 15px;
+	border-left: 4px solid #2c3e50;
+	margin: 15px 0;
+}
+
+.omp-shortcode-example code {
+	display: block;
+	margin: 10px 0;
+	padding: 10px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+/* Changes highlight */
+.omp-highlight {
+	background-color: #fffde7;
+	transition: background-color 0.5s ease;
+}
+
+/* Statuses Colors */
+.omp-status-completed {
+	display: inline-block;
+	background: #c8e6c9;
+	color: #1b5e20;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-processing {
+	display: inline-block;
+	background: #bbdefb;
+	color: #0d47a1;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-on-hold {
+	display: inline-block;
+	background: #fff9c4;
+	color: #f57f17;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-cancelled {
+	display: inline-block;
+	background: #ffcdd2;
+	color: #b71c1c;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-failed {
+	display: inline-block;
+	background: #ffcdd2;
+	color: #b71c1c;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-refunded {
+	display: inline-block;
+	background: #f5f5f5;
+	color: #616161;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.omp-status-pending {
+	display: inline-block;
+	background: #ffe0b2;
+	color: #e65100;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 13px;
+}
