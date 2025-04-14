@@ -4,7 +4,16 @@
 
 /* Container */
 .omp-order-table-container {
-	margin-bottom: 30px;
+	margin: 40px auto;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+
+	padding: 30px;
+	color: #0f0f0f;
+	background-color: #f0f0f0;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	line-height: 1.5;
 }
 
 /* Action Buttons */

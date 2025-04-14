@@ -233,7 +233,9 @@ if ($company_logo_id) {
             <button class="print-button" onclick="printInvoiceOnly();">
                 <?php echo esc_html__('Print Invoice', 'order-manager-plus'); ?>
             </button>
-            <button href="<?php echo esc_url(admin_url('admin.php?page=omp_order_invoices')); ?>" class="back-button">
+            <button
+                onclick="window.location.href='<?php echo esc_url(admin_url('admin.php?page=omp_order_invoices')); ?>'"
+                class="back-button">
                 <?php echo esc_html__('Back to Invoices', 'order-manager-plus'); ?>
             </button>
         </div>

@@ -71,7 +71,6 @@ function omp_init()
 
     // Include admin files
     require_once OMP_PLUGIN_DIR . 'includes/admin/class-admin-menu.php';
-    require_once OMP_PLUGIN_DIR . 'includes/admin/class-order-editor.php';
     require_once OMP_PLUGIN_DIR . 'includes/admin/class-invoice-generator.php';
 
     // Initialize date formatter (used throughout)
@@ -82,11 +81,6 @@ function omp_init()
 
     // Initialize admin menu
     $admin_menu = new OMP_Admin_Menu();
-
-    // Initialize admin classes
-    if (is_admin()) {
-        $order_editor = new OMP_Order_Editor();
-    }
 
     // Initialize invoice generator (needed for front-end as well)
     $invoice_generator = new OMP_Invoice_Generator();

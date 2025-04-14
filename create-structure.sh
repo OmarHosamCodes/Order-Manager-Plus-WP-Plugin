@@ -12,13 +12,11 @@ touch order-manager-plus/includes/core/class-date-formatter.php
 
 # Create admin files
 touch order-manager-plus/includes/admin/class-admin-menu.php
-touch order-manager-plus/includes/admin/class-order-editor.php
 touch order-manager-plus/includes/admin/class-invoice-generator.php
 
 # Create template files
 touch order-manager-plus/includes/templates/order-table-template.php
 touch order-manager-plus/includes/templates/invoice-template.php
-touch order-manager-plus/includes/templates/edit-order-template.php
 
 # Create asset files
 touch order-manager-plus/assets/css/admin.css

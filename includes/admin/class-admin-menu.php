@@ -63,14 +63,6 @@ class OMP_Admin_Menu
             array($this, 'render_invoice_page')
         );
 
-        add_submenu_page(
-            null, // No parent menu - hidden page
-            __('Edit Order', 'order-manager-plus'),
-            __('Edit Order', 'order-manager-plus'),
-            'manage_woocommerce',
-            'omp_order_edit',
-            array($this, 'render_edit_page')
-        );
     }
 
 
@@ -158,12 +150,4 @@ class OMP_Admin_Menu
         echo $invoice_generator->generate_invoice($order_id);
     }
 
-    /**
-     * Render the edit page
-     */
-    public function render_edit_page()
-    {
-        // Include the edit order template
-        include_once OMP_PLUGIN_DIR . 'includes/templates/edit-order-template.php';
-    }
 }
