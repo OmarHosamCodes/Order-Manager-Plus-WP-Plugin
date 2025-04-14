@@ -3,8 +3,8 @@
  * Plugin Name: Order Manager Plus
  * Description: Enhanced WooCommerce order management with customizable tables, invoice generation, and order editing features.
  * Version:     1.0.0
- * Author:      Your Name
- * Author URI:  https://example.com
+ * Author:      Omar Hosam
+ * Author URI:  school-of-markiting.com
  * Text Domain: order-manager-plus
  * Domain Path: /languages
  * Requires at least: 5.6
