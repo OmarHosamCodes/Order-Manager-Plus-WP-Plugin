@@ -47,7 +47,7 @@ class OMP_Theme_Customizer
     public function localize_admin_script($hook)
     {
         // Only on our plugin pages
-        if (strpos($hook, 'order_manager_plus') === false) {
+        if (!$hook || (is_string($hook) && strpos($hook, 'order_manager_plus') === false)) {
             return;
         }
 

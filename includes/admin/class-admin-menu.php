@@ -110,11 +110,24 @@ class OMP_Admin_Menu
      */
     public function register_settings()
     {
-        // Register settings
+        // Register settings for the General tab
+        register_setting(
+            'omp_options',
+            'omp_settings',
+            array($this, 'sanitize_settings')
+        );
+
+        // Register settings for the Theme tab
         register_setting(
             'omp_theme_options',
             'omp_theme_settings',
             array($this, 'sanitize_theme_settings')
+        );
+
+        // Register settings for the Advanced tab
+        register_setting(
+            'omp_advanced_options',
+            'omp_settings'
         );
 
         // Add sections
@@ -439,12 +452,61 @@ class OMP_Admin_Menu
     /**
      * Render the general settings tab
      */
+    /**
+     * Sanitize general settings
+     * 
+     * @param array $input Settings input
+     * @return array Sanitized settings
+     */
+    public function sanitize_settings($input)
+    {
+        $sanitized = array();
+
+        // Sanitize numeric values
+        if (isset($input['table_per_page'])) {
+            $sanitized['table_per_page'] = absint($input['table_per_page']);
+        }
+
+        // Sanitize array values
+        if (isset($input['default_statuses']) && is_array($input['default_statuses'])) {
+            $sanitized['default_statuses'] = array_map('sanitize_text_field', $input['default_statuses']);
+        }
+
+        // Sanitize string values
+        if (isset($input['date_format'])) {
+            $sanitized['date_format'] = sanitize_text_field($input['date_format']);
+        }
+
+        if (isset($input['order_sort'])) {
+            $sanitized['order_sort'] = sanitize_text_field($input['order_sort']);
+        }
+
+        // Sanitize checkboxes
+        $checkbox_fields = array('enable_invoice', 'enable_edit', 'enable_export', 'enable_debug');
+        foreach ($checkbox_fields as $field) {
+            $sanitized[$field] = isset($input[$field]) ? 1 : 0;
+        }
+
+        // Sanitize cache time
+        if (isset($input['cache_time'])) {
+            $sanitized['cache_time'] = absint($input['cache_time']);
+        }
+
+        // Sanitize custom CSS
+        if (isset($input['custom_css'])) {
+            $sanitized['custom_css'] = $input['custom_css']; // Not sanitizing to allow CSS
+        }
+
+        return $sanitized;
+    }
+
     private function render_general_tab()
     {
         $options = get_option('omp_settings', array());
 
         echo '<form method="post" action="options.php">';
         settings_fields('omp_options');
+        do_settings_sections('omp_options');
 
         echo '<table class="form-table">';
         echo '<tr>';
@@ -606,6 +668,7 @@ class OMP_Admin_Menu
 
         echo '<form method="post" action="options.php">';
         settings_fields('omp_advanced_options');
+        do_settings_sections('omp_advanced_options');
 
         echo '<table class="form-table">';
 

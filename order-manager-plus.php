@@ -221,7 +221,7 @@ add_action('wp_enqueue_scripts', 'omp_enqueue_scripts');
 function omp_admin_enqueue_styles($hook)
 {
     // Only enqueue on our plugin pages
-    if (strpos($hook, 'order_manager_plus') === false) {
+    if (!$hook || (is_string($hook) && strpos($hook, 'order_manager_plus') === false)) {
         return;
     }
 
