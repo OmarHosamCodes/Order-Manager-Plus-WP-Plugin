@@ -166,8 +166,9 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
 
     <div class="omp-pagination">
         <?php
+        $pagenum_link = get_pagenum_link(999999999) ?: '';
         echo paginate_links([
-            'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999) ?: '/')),
+            'base' => str_replace(999999999, '%#%', esc_url($pagenum_link)),
             'format' => '?paged=%#%',
             'current' => max(1, get_query_var('paged')),
             'total' => $orders->max_num_pages,
@@ -224,20 +225,20 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
 
             // If no orders selected and no filters set, show message
             if (orderIds.length === 0 && status === 'any' && !fromDate && !toDate) {
-                alert(omp_i18n?.select_orders || 'Please select at least one order or set filter criteria.');
+                alert(ompData.i18n?.select_orders || 'Please select at least one order or set filter criteria.');
                 return;
             }
 
             // Show loading state
-            $(this).addClass('omp-loading').text(omp_i18n?.exporting || 'Exporting...');
+            $(this).addClass('omp-loading').text(ompData.i18n?.exporting || 'Exporting...');
 
             // Make AJAX request
             $.ajax({
-                url: omp_data.ajax_url,
+                url: ompData.ajaxUrl,
                 type: 'POST',
                 data: {
                     action: 'omp_export_orders',
-                    nonce: omp_data.nonce,
+                    nonce: ompData.nonce,
                     order_ids: orderIds,
                     status: status,
                     from_date: fromDate,
@@ -255,15 +256,15 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
                         link.click();
                         document.body.removeChild(link);
                     } else {
-                        alert(response.data.message || omp_i18n?.export_error || 'Error exporting orders.');
+                        alert(response.data.message || ompData.i18n?.export_error || 'Error exporting orders.');
                     }
                 },
                 error: function () {
-                    alert(omp_i18n?.export_error || 'Error exporting orders.');
+                    alert(ompData.i18n?.export_error || 'Error exporting orders.');
                 },
                 complete: function () {
                     // Reset button state
-                    $('#omp-export-btn').removeClass('omp-loading').text(omp_i18n?.export_selected || 'Export Selected');
+                    $('#omp-export-btn').removeClass('omp-loading').text(ompData.i18n?.export_selected || 'Export Selected');
                 }
             });
         });

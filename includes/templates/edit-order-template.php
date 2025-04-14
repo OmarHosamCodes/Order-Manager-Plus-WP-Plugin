@@ -198,11 +198,12 @@ $billing = $order->get_address('billing');
                     <select id="order_status" name="order_status">
                         <option value=""><?php echo esc_html__('— No Change —', 'order-manager-plus'); ?></option>
                         <?php foreach (wc_get_order_statuses() as $status => $label):
-                            $status_key = str_replace('wc-', '', $status);
+                            $status_key = is_string($status) ? str_replace('wc-', '', $status) : $status;
                             $selected = $order->get_status() === $status_key ? 'selected="selected"' : '';
                             ?>
                             <option value="<?php echo esc_attr($status_key); ?>" <?php echo $selected; ?>>
-                                <?php echo esc_html($label); ?></option>
+                                <?php echo esc_html($label); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>

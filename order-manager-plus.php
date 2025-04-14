@@ -52,9 +52,7 @@ function omp_woocommerce_missing_notice()
     <?php
 }
 
-/**
- * Initialize the plugin
- */
+// Initialize the plugin
 function omp_init()
 {
     // Check for WooCommerce
@@ -71,7 +69,8 @@ function omp_init()
     require_once OMP_PLUGIN_DIR . 'includes/core/class-order-table.php';
     require_once OMP_PLUGIN_DIR . 'includes/core/class-order-exporter.php';
 
-    // Include admin files - always needed (even if not in admin, for AJAX callbacks)
+    // Include admin files
+    require_once OMP_PLUGIN_DIR . 'includes/admin/class-admin-menu.php';
     require_once OMP_PLUGIN_DIR . 'includes/admin/class-order-editor.php';
     require_once OMP_PLUGIN_DIR . 'includes/admin/class-invoice-generator.php';
 
@@ -80,6 +79,9 @@ function omp_init()
 
     // Register shortcode
     add_shortcode('order_manager_table', array('OMP_Order_Table', 'shortcode'));
+
+    // Initialize admin menu
+    $admin_menu = new OMP_Admin_Menu();
 
     // Initialize admin classes
     if (is_admin()) {
@@ -198,6 +200,12 @@ function omp_enqueue_scripts()
         wp_localize_script('omp-table-script', 'ompData', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('omp-nonce'),
+            'i18n' => array(
+                'select_orders' => __('Please select at least one order or set filter criteria.', 'order-manager-plus'),
+                'exporting' => __('Exporting...', 'order-manager-plus'),
+                'export_error' => __('Error exporting orders.', 'order-manager-plus'),
+                'export_selected' => __('Export Selected', 'order-manager-plus')
+            )
         ));
     }
 }

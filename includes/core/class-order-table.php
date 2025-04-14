@@ -83,7 +83,11 @@ class OMP_Order_Table
         // Remove 'wc-' prefix if it exists
         $formatted_statuses = array();
         foreach ($statuses as $status) {
-            $formatted_statuses[] = str_replace('wc-', '', $status);
+            if (is_string($status)) {
+                $formatted_statuses[] = str_replace('wc-', '', $status);
+            } else {
+                $formatted_statuses[] = $status;
+            }
         }
 
         // Query args for WC_Order_Query
