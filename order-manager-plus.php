@@ -68,6 +68,7 @@ function omp_init()
     require_once OMP_PLUGIN_DIR . 'includes/core/class-date-formatter.php';
     require_once OMP_PLUGIN_DIR . 'includes/core/class-order-table.php';
     require_once OMP_PLUGIN_DIR . 'includes/core/class-order-exporter.php';
+    require_once OMP_PLUGIN_DIR . 'includes/core/class-theme-customizer.php';
 
     // Include admin files
     require_once OMP_PLUGIN_DIR . 'includes/admin/class-admin-menu.php';
@@ -87,6 +88,9 @@ function omp_init()
 
     // Initialize order exporter (needed for AJAX)
     $order_exporter = new OMP_Order_Exporter();
+
+    // Initialize order table (needed for AJAX)
+    $theme_customizer = new OMP_Theme_Customizer();
 
     // Register block editor integration if available
     if (function_exists('register_block_type')) {
@@ -190,6 +194,14 @@ function omp_enqueue_scripts()
             true
         );
 
+        wp_enqueue_script(
+            'omp-admin-script',
+            OMP_PLUGIN_URL . 'assets/js/admin.js',
+            array('jquery', 'wp-color-picker'),
+            OMP_VERSION,
+            true
+        );
+
         // Localize script with plugin data
         wp_localize_script('omp-table-script', 'ompData', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -204,3 +216,43 @@ function omp_enqueue_scripts()
     }
 }
 add_action('wp_enqueue_scripts', 'omp_enqueue_scripts');
+
+// Register admin styles
+function omp_admin_enqueue_styles($hook)
+{
+    // Only enqueue on our plugin pages
+    if (strpos($hook, 'order_manager_plus') === false) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'omp-admin-styles',
+        OMP_PLUGIN_URL . 'assets/css/admin.css',
+        array(),
+        OMP_VERSION
+    );
+}
+add_action('admin_enqueue_scripts', 'omp_admin_enqueue_styles');
+
+// Implement sanitize_hex_color if not available
+if (!function_exists('sanitize_hex_color')) {
+    /**
+     * Sanitizes a hex color.
+     *
+     * @param string $color Hex color code.
+     * @return string|null Sanitized hex color, or null if not a hex color.
+     */
+    function sanitize_hex_color($color)
+    {
+        if ('' === $color) {
+            return '';
+        }
+
+        // 3 or 6 hex digits, or the empty string.
+        if (preg_match('|^#([A-Fa-f0-9]{3}){1,2}$|', $color)) {
+            return $color;
+        }
+
+        return null;
+    }
+}

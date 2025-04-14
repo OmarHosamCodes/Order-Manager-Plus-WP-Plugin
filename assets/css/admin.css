@@ -211,3 +211,155 @@
 	border-radius: 4px;
 	font-size: 13px;
 }
+
+/* Theme Customization Tab */
+.omp-theme-preview {
+	margin-top: 30px;
+	padding: 20px;
+	background: #f8f9fa;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.omp-preview-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.omp-preview-section {
+	margin-bottom: 20px;
+}
+
+.omp-preview-section h4 {
+	margin-bottom: 15px;
+	font-size: 16px;
+	color: #555;
+}
+
+/* Button Preview */
+.omp-preview-button {
+	display: inline-block;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 4px;
+	color: white;
+	cursor: pointer;
+	font-size: 14px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+.omp-preview-button.omp-primary-button {
+	background-color: #2c3e50;
+}
+
+.omp-preview-button.omp-secondary-button {
+	background-color: #3498db;
+}
+
+.omp-preview-button.omp-success-button {
+	background-color: #27ae60;
+}
+
+.omp-preview-button.omp-danger-button {
+	background-color: #e74c3c;
+}
+
+/* Table Preview */
+.omp-preview-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 15px;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.omp-preview-table th {
+	background-color: #2c3e50;
+	color: white;
+	padding: 10px;
+	text-align: left;
+}
+
+.omp-preview-table td {
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+}
+
+.omp-preview-table tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+/* Status Indicator Preview */
+.omp-preview-status {
+	display: inline-block;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	margin-right: 10px;
+}
+
+.omp-preview-status.omp-preview-completed {
+	background-color: #c8e6c9;
+	color: #1b5e20;
+}
+
+.omp-preview-status.omp-preview-processing {
+	background-color: #bbdefb;
+	color: #0d47a1;
+}
+
+.omp-preview-status.omp-preview-on-hold {
+	background-color: #fff9c4;
+	color: #f57f17;
+}
+
+.omp-preview-status.omp-preview-cancelled {
+	background-color: #ffcdd2;
+	color: #b71c1c;
+}
+
+/* Range Slider */
+.omp-range-slider {
+	width: 300px;
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+.omp-range-value {
+	display: inline-block;
+	min-width: 40px;
+	text-align: center;
+	padding: 5px;
+	background: #f0f0f0;
+	border-radius: 3px;
+	margin-left: 10px;
+}
+
+/* Reset Button */
+.omp-reset-theme {
+	margin-left: 10px;
+}
+
+/* Color Picker */
+.wp-picker-container {
+	display: inline-block;
+}
+
+/* Settings Field Spacing */
+.form-table th {
+	padding: 20px 10px 20px 0;
+}
+
+/* Admin Tab Nav */
+.nav-tab-wrapper {
+	margin-bottom: 20px;
+}
+
+/* Tools Buttons */
+.omp-clear-cache,
+.omp-reset-settings {
+	margin-right: 10px;
+}
