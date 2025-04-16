@@ -12,6 +12,7 @@ if (!defined('ABSPATH')) {
 
 // Get plugin options
 $options = get_option('omp_settings', array());
+$theme_settings = get_option('omp_theme_settings', array());
 
 // Get the order
 $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
@@ -41,9 +42,42 @@ if ($company_logo_id) {
         $company_logo_url = $company_logo_data[0];
     }
 }
+
+// Check for RTL direction
+$is_rtl = is_rtl();
+$dir_attribute = $is_rtl ? 'rtl' : 'ltr';
+
+// Get theme colors from settings
+$primary_color = !empty($theme_settings['primary_color']) ? $theme_settings['primary_color'] : '#2c3e50';
+$secondary_color = !empty($theme_settings['secondary_color']) ? $theme_settings['secondary_color'] : '#3498db';
+$success_color = !empty($theme_settings['success_color']) ? $theme_settings['success_color'] : '#27ae60';
+$danger_color = !empty($theme_settings['danger_color']) ? $theme_settings['danger_color'] : '#e74c3c';
+$border_radius = isset($theme_settings['border_radius']) ? absint($theme_settings['border_radius']) : 4;
+$font_family = !empty($theme_settings['font_family']) ? $theme_settings['font_family'] : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+
+// Apply RTL specific font settings
+if ($is_rtl) {
+    // Common RTL font stacks
+    if (strpos(get_locale(), 'he_IL') !== false) {
+        $font_family = 'Arial, sans-serif';
+    } elseif (strpos(get_locale(), 'ar') === 0) {
+        $font_family = 'Tahoma, Arial, sans-serif';
+    }
+}
+
+// Allow theme customization through filter
+$theme_settings = apply_filters('omp_invoice_theme_settings', array(
+    'primary_color' => $primary_color,
+    'secondary_color' => $secondary_color,
+    'success_color' => $success_color,
+    'danger_color' => $danger_color,
+    'border_radius' => $border_radius,
+    'font_family' => $font_family,
+    'is_rtl' => $is_rtl
+));
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo get_locale(); ?>">
+<html lang="<?php echo get_locale(); ?>" dir="<?php echo $dir_attribute; ?>">
 
 <head>
     <meta charset="UTF-8">
@@ -52,21 +86,30 @@ if ($company_logo_id) {
         #<?php echo esc_html($order->get_order_number()); ?></title>
     <style>
         #omp-body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            font-family:
+                <?php echo $theme_settings['font_family']; ?>
+            ;
             color: #0f0f0f;
             line-height: 1.5;
             max-width: 80%;
             margin: 40px auto;
             padding: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            border-radius:
+                <?php echo $theme_settings['border_radius']; ?>
+                px;
             background-color: #f0f0f0;
+            direction:
+                <?php echo $dir_attribute; ?>
+            ;
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color:
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             margin-top: 0;
         }
 
@@ -75,16 +118,22 @@ if ($company_logo_id) {
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #2c3e50;
+            border-bottom: 2px solid
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             padding-bottom: 15px;
         }
 
         .company-info {
-            text-align: left;
+            text-align:
+                <?php echo $is_rtl ? 'right' : 'left'; ?>
+            ;
         }
 
         .invoice-info {
-            text-align: right;
+            text-align:
+                <?php echo $is_rtl ? 'left' : 'right'; ?>
+            ;
         }
 
         .company-logo {
@@ -105,7 +154,9 @@ if ($company_logo_id) {
         .info-box {
             background-color: #f8f9fa;
             padding: 15px;
-            border-radius: 8px;
+            border-radius:
+                <?php echo $theme_settings['border_radius']; ?>
+                px;
         }
 
         .info-label {
@@ -127,10 +178,14 @@ if ($company_logo_id) {
         }
 
         th {
-            background-color: #2c3e50;
+            background-color:
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             color: white;
             padding: 12px;
-            text-align: left;
+            text-align:
+                <?php echo $is_rtl ? 'right' : 'left'; ?>
+            ;
         }
 
         td {
@@ -144,7 +199,9 @@ if ($company_logo_id) {
 
         .order-summary {
             display: flex;
-            justify-content: flex-end;
+            justify-content:
+                <?php echo $is_rtl ? 'flex-start' : 'flex-end'; ?>
+            ;
             margin-bottom: 30px;
         }
 
@@ -152,7 +209,9 @@ if ($company_logo_id) {
             width: 350px;
             background-color: #f8f9fa;
             padding: 20px;
-            border-radius: 8px;
+            border-radius:
+                <?php echo $theme_settings['border_radius']; ?>
+                px;
         }
 
         .summary-row {
@@ -164,7 +223,9 @@ if ($company_logo_id) {
         .summary-total {
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 2px solid #2c3e50;
+            border-top: 2px solid
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             font-weight: bold;
             font-size: 18px;
         }
@@ -180,14 +241,18 @@ if ($company_logo_id) {
 
         .print-button {
             /* Already prefixed in HTML, added here for consistency */
-            background-color: #2c3e50;
+            background-color:
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             box-sizing: border-box;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius:
+                <?php echo $theme_settings['border_radius']; ?>
+                px;
             cursor: pointer;
             font-size: 16px;
             margin-bottom: 20px;
@@ -196,20 +261,26 @@ if ($company_logo_id) {
 
         .back-button {
             background-color: transparent;
-            color: #2c3e50;
-            border: 2px solid #2c3e50;
+            color:
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
+            border: 2px solid
+                <?php echo $theme_settings['primary_color']; ?>
+            ;
             box-sizing: border-box;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius:
+                <?php echo $theme_settings['border_radius']; ?>
+                px;
             cursor: pointer;
             font-size: 16px;
             margin-bottom: 20px;
             text-decoration: none;
             height: 50px;
             width: max-content;
-
+            margin-<?php echo $is_rtl ? 'left' : 'right'; ?>: 10px;
         }
 
         @media print {
@@ -224,6 +295,11 @@ if ($company_logo_id) {
             }
         }
     </style>
+    <script>
+        function printInvoiceOnly() {
+            window.print();
+        }
+    </script>
 </head>
 
 <body>
@@ -385,42 +461,6 @@ if ($company_logo_id) {
             <p><?php echo esc_html($company_name); ?> &copy; <?php echo date('Y'); ?></p>
         </div>
     </section>
-    <script>
-        function printInvoiceOnly() {
-            // Create a new window with only invoice content
-            var printWindow = window.open('', '_blank');
-
-            // Clone the invoice content without actions buttons
-            var contentClone = document.querySelector('#omp-body').cloneNode(true);
-            var actionsDiv = contentClone.querySelector('.invoice-actions');
-            if (actionsDiv) {
-                actionsDiv.style.display = 'none';
-            }
-
-            // Add necessary styles and content
-            printWindow.document.write('<html><head><title><?php echo esc_js(__("Invoice", "order-manager-plus")); ?> #<?php echo esc_js($order->get_order_number()); ?></title>');
-            printWindow.document.write('<style>');
-
-            // Get all styles from the current document
-            var styles = document.getElementsByTagName('style');
-            for (var i = 0; i < styles.length; i++) {
-                printWindow.document.write(styles[i].innerHTML);
-            }
-
-            printWindow.document.write('.no-print { display: none !important; }');
-            printWindow.document.write('</style></head><body>');
-            printWindow.document.write(contentClone.outerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-
-            // Print after content is loaded
-            printWindow.onload = function () {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            };
-        }
-    </script>
 </body>
 
 </html>

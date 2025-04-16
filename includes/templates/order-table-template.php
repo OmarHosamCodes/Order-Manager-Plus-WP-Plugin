@@ -12,17 +12,91 @@ if (!defined('ABSPATH')) {
 
 // Get plugin settings
 $options = get_option('omp_settings', array());
+$theme_settings = get_option('omp_theme_settings', array());
 $enable_invoice = isset($options['enable_invoice']) ? $options['enable_invoice'] : true;
 $enable_edit = isset($options['enable_edit']) ? $options['enable_edit'] : true;
 $enable_export = isset($options['enable_export']) ? $options['enable_export'] : true;
+
+// Check for RTL direction
+$is_rtl = is_rtl();
+$dir_attribute = $is_rtl ? 'rtl' : 'ltr';
+
+// Get theme colors from settings (to be used as CSS variables)
+$primary_color = !empty($theme_settings['primary_color']) ? $theme_settings['primary_color'] : '#2c3e50';
+$secondary_color = !empty($theme_settings['secondary_color']) ? $theme_settings['secondary_color'] : '#3498db';
+$success_color = !empty($theme_settings['success_color']) ? $theme_settings['success_color'] : '#27ae60';
+$danger_color = !empty($theme_settings['danger_color']) ? $theme_settings['danger_color'] : '#e74c3c';
+$border_radius = isset($theme_settings['border_radius']) ? absint($theme_settings['border_radius']) : 4;
+$font_family = !empty($theme_settings['font_family']) ? $theme_settings['font_family'] : '';
+
+// Apply RTL specific font settings
+if ($is_rtl) {
+    // Common RTL font stacks if no custom font is set
+    if (empty($font_family)) {
+        if (strpos(get_locale(), 'he_IL') !== false) {
+            $font_family = 'Arial, sans-serif';
+        } elseif (strpos(get_locale(), 'ar') === 0) {
+            $font_family = 'Tahoma, Arial, sans-serif';
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo get_locale(); ?>" dir="<?php echo $dir_attribute; ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --omp-primary-color:
+                <?php echo $primary_color; ?>
+            ;
+            --omp-secondary-color:
+                <?php echo $secondary_color; ?>
+            ;
+            --omp-success-color:
+                <?php echo $success_color; ?>
+            ;
+            --omp-danger-color:
+                <?php echo $danger_color; ?>
+            ;
+            --omp-border-radius:
+                <?php echo $border_radius; ?>
+                px;
+            <?php if (!empty($font_family)): ?>
+                --omp-font-family:
+                    <?php echo $font_family; ?>
+                ;
+            <?php endif; ?>
+        }
+
+        <?php if (!empty($font_family)): ?>
+            .omp-order-table-container {
+                font-family: var(--omp-font-family);
+            }
+
+        <?php endif; ?>
+
+        /* RTL-specific alignments */
+        html[dir="rtl"] .omp-actions-column {
+            text-align: left;
+        }
+
+        html[dir="rtl"] .omp-checkbox-column {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .omp-export-filters label {
+            margin-left: 20px;
+            margin-right: 0;
+        }
+
+        html[dir="rtl"] .omp-action-buttons {
+            flex-direction: row-reverse;
+        }
+    </style>
 </head>
 
 <body>
@@ -150,8 +224,16 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
                                     // Add invoice action if enabled
                                     if ($enable_invoice) {
                                         echo '<a href="' . esc_url(admin_url('admin.php?page=omp_order_invoice&order_id=' . $order->get_id())) . '" 
-                                             class="omp-button omp-invoice-button" target="_blank">' .
+                                             class="omp-button omp-invoice-button" target="_blank" data-order-id="' . esc_attr($order->get_id()) . '">' .
                                             esc_html__('Invoice', 'order-manager-plus') .
+                                            '</a>';
+                                    }
+
+                                    // Add edit action if enabled
+                                    if ($enable_edit && current_user_can('manage_woocommerce')) {
+                                        echo '<a href="' . esc_url(admin_url('post.php?post=' . $order->get_id() . '&action=edit')) . '" 
+                                             class="omp-button omp-edit-button" target="_blank">' .
+                                            esc_html__('Edit', 'order-manager-plus') .
                                             '</a>';
                                     }
                                     ?>
@@ -184,7 +266,8 @@ $enable_export = isset($options['enable_export']) ? $options['enable_export'] : 
                 $('.omp-datepicker').datepicker({
                     dateFormat: "yy-mm-dd",
                     changeMonth: true,
-                    changeYear: true
+                    changeYear: true,
+                    isRTL: <?php echo $is_rtl ? 'true' : 'false'; ?>
                 });
             }
 

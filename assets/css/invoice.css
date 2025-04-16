@@ -4,15 +4,14 @@
 
 /* General invoice styles */
 .omp-invoice {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-		Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-family: inherit; /* Will use the font set by theme or WordPress */
 	color: #333;
 	line-height: 1.5;
 	max-width: 800px;
 	margin: 40px auto;
 	padding: 30px;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
+	border-radius: var(--omp-border-radius, 8px);
 	background-color: #fff;
 }
 
@@ -22,16 +21,16 @@
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 30px;
-	border-bottom: 2px solid #2c3e50;
+	border-bottom: 2px solid var(--omp-primary-color, #2c3e50);
 	padding-bottom: 15px;
 }
 
 .omp-company-info {
-	text-align: left;
+	text-align: start;
 }
 
 .omp-invoice-info {
-	text-align: right;
+	text-align: end;
 }
 
 .omp-company-logo {
@@ -53,7 +52,7 @@
 .omp-info-box {
 	background-color: #f8f9fa;
 	padding: 15px;
-	border-radius: 8px;
+	border-radius: var(--omp-border-radius, 8px);
 }
 
 .omp-info-label {
@@ -76,10 +75,10 @@
 }
 
 .omp-invoice-table th {
-	background-color: #2c3e50;
+	background-color: var(--omp-primary-color, #2c3e50);
 	color: white;
 	padding: 12px;
-	text-align: left;
+	text-align: start;
 }
 
 .omp-invoice-table td {
@@ -98,11 +97,15 @@
 	margin-bottom: 30px;
 }
 
+html[dir="rtl"] .omp-order-summary {
+	justify-content: flex-start;
+}
+
 .omp-summary-box {
 	width: 350px;
 	background-color: #f8f9fa;
 	padding: 20px;
-	border-radius: 8px;
+	border-radius: var(--omp-border-radius, 8px);
 }
 
 .omp-summary-row {
@@ -114,7 +117,7 @@
 .omp-summary-total {
 	margin-top: 15px;
 	padding-top: 15px;
-	border-top: 2px solid #2c3e50;
+	border-top: 2px solid var(--omp-primary-color, #2c3e50);
 	font-weight: bold;
 	font-size: 18px;
 }
@@ -137,15 +140,19 @@
 	margin-bottom: 20px;
 }
 
+html[dir="rtl"] .omp-invoice-actions {
+	justify-content: flex-start;
+}
+
 .omp-print-button,
 .omp-pdf-button,
 .omp-back-button {
 	display: inline-block;
-	background-color: #2c3e50;
+	background-color: var(--omp-primary-color, #2c3e50);
 	color: white;
 	border: none;
 	padding: 10px 20px;
-	border-radius: 4px;
+	border-radius: var(--omp-border-radius, 4px);
 	cursor: pointer;
 	font-size: 16px;
 	text-decoration: none;
@@ -155,13 +162,13 @@
 .omp-print-button:hover,
 .omp-pdf-button:hover,
 .omp-back-button:hover {
-	background-color: #1a252f;
+	background-color: var(--omp-secondary-color, #1a252f);
 	color: white;
 	text-decoration: none;
 }
 
 .omp-pdf-button {
-	background-color: #e74c3c;
+	background-color: var(--omp-danger-color, #e74c3c);
 }
 
 .omp-pdf-button:hover {
@@ -238,4 +245,22 @@
 	.omp-invoice-actions {
 		justify-content: center;
 	}
+}
+
+/* RTL-specific styles */
+html[dir="rtl"] .omp-invoice {
+	text-align: right;
+}
+
+/* Font families for RTL languages */
+html[dir="rtl"].locale-he-il .omp-invoice,
+html[dir="rtl"].locale-he-il .omp-invoice input,
+html[dir="rtl"].locale-he-il .omp-invoice button {
+	font-family: Arial, sans-serif;
+}
+
+html[dir="rtl"].locale-ar .omp-invoice,
+html[dir="rtl"].locale-ar .omp-invoice input,
+html[dir="rtl"].locale-ar .omp-invoice button {
+	font-family: Tahoma, Arial, sans-serif;
 }

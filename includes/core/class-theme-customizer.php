@@ -37,6 +37,52 @@ class OMP_Theme_Customizer
 
         // Localize script with data
         add_action('admin_enqueue_scripts', array($this, 'localize_admin_script'));
+
+        // Filter the body classes to add RTL class if needed
+        add_filter('admin_body_class', array($this, 'add_rtl_admin_body_class'));
+        add_filter('body_class', array($this, 'add_rtl_body_class'));
+    }
+
+    /**
+     * Add RTL class to admin body if needed
+     * 
+     * @param string $classes Space-separated list of classes
+     * @return string Modified list of classes
+     */
+    public function add_rtl_admin_body_class($classes)
+    {
+        if (is_rtl()) {
+            $classes .= ' omp-rtl';
+
+            // Add locale-specific class
+            $locale = get_locale();
+            if (!empty($locale)) {
+                $classes .= ' omp-locale-' . sanitize_html_class(strtolower($locale));
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * Add RTL class to frontend body if needed
+     * 
+     * @param array $classes Array of body classes
+     * @return array Modified array of body classes
+     */
+    public function add_rtl_body_class($classes)
+    {
+        if (is_rtl()) {
+            $classes[] = 'omp-rtl';
+
+            // Add locale-specific class
+            $locale = get_locale();
+            if (!empty($locale)) {
+                $classes[] = 'omp-locale-' . sanitize_html_class(strtolower($locale));
+            }
+        }
+
+        return $classes;
     }
 
     /**
@@ -57,7 +103,8 @@ class OMP_Theme_Customizer
             'resetAllConfirmText' => __('Are you sure you want to reset ALL plugin settings? This cannot be undone.', 'order-manager-plus'),
             'clearingCacheText' => __('Clearing...', 'order-manager-plus'),
             'resettingText' => __('Resetting...', 'order-manager-plus'),
-            'errorText' => __('An error occurred.', 'order-manager-plus')
+            'errorText' => __('An error occurred.', 'order-manager-plus'),
+            'isRTL' => is_rtl()
         ));
     }
 
@@ -126,6 +173,35 @@ class OMP_Theme_Customizer
         // Initialize CSS
         $css = '';
 
+        // Check if RTL
+        $is_rtl = is_rtl();
+
+        // Start with CSS variables for easy theme application
+        $css .= '
+            :root {
+                --omp-primary-color: ' . sanitize_hex_color($settings['primary_color'] ?? '#2c3e50') . ';
+                --omp-secondary-color: ' . sanitize_hex_color($settings['secondary_color'] ?? '#3498db') . ';
+                --omp-success-color: ' . sanitize_hex_color($settings['success_color'] ?? '#27ae60') . ';
+                --omp-danger-color: ' . sanitize_hex_color($settings['danger_color'] ?? '#e74c3c') . ';
+                --omp-border-radius: ' . absint($settings['border_radius'] ?? 4) . 'px;
+        ';
+
+        // Add font family if specified
+        if (!empty($settings['font_family'])) {
+            $css .= '--omp-font-family: ' . sanitize_text_field($settings['font_family']) . ';';
+        } elseif ($is_rtl) {
+            // Set default RTL fonts based on locale
+            $locale = get_locale();
+            if (strpos($locale, 'he_IL') !== false) {
+                $css .= '--omp-font-family: Arial, sans-serif;';
+            } elseif (strpos($locale, 'ar') === 0) {
+                $css .= '--omp-font-family: Tahoma, Arial, sans-serif;';
+            }
+        }
+
+        $css .= '}
+        ';
+
         // Primary color
         if (!empty($settings['primary_color'])) {
             $css .= '
@@ -133,10 +209,10 @@ class OMP_Theme_Customizer
                 .omp-button,
                 #omp-order-table th,
                 .omp-pagination .page-numbers.current {
-                    background-color: ' . sanitize_hex_color($settings['primary_color']) . ' !important;
+                    background-color: var(--omp-primary-color) !important;
                 }
                 .omp-pagination .page-numbers.current {
-                    border-color: ' . sanitize_hex_color($settings['primary_color']) . ' !important;
+                    border-color: var(--omp-primary-color) !important;
                 }
             ';
         }
@@ -147,7 +223,7 @@ class OMP_Theme_Customizer
                 /* Secondary Color */
                 .omp-invoice-button,
                 .omp-status-processing {
-                    background-color: ' . sanitize_hex_color($settings['secondary_color']) . ' !important;
+                    background-color: var(--omp-secondary-color) !important;
                 }
             ';
         }
@@ -158,7 +234,7 @@ class OMP_Theme_Customizer
                 /* Success Color */
                 .omp-export-button,
                 .omp-status-completed {
-                    background-color: ' . sanitize_hex_color($settings['success_color']) . ' !important;
+                    background-color: var(--omp-success-color) !important;
                 }
             ';
         }
@@ -170,7 +246,7 @@ class OMP_Theme_Customizer
                 .omp-edit-button,
                 .omp-status-cancelled,
                 .omp-status-failed {
-                    background-color: ' . sanitize_hex_color($settings['danger_color']) . ' !important;
+                    background-color: var(--omp-danger-color) !important;
                 }
             ';
         }
@@ -181,14 +257,13 @@ class OMP_Theme_Customizer
                 /* Font Family */
                 .omp-order-table-container,
                 .omp-invoice {
-                    font-family: ' . sanitize_text_field($settings['font_family']) . ' !important;
+                    font-family: var(--omp-font-family) !important;
                 }
             ';
         }
 
         // Border radius
         if (isset($settings['border_radius'])) {
-            $border_radius = absint($settings['border_radius']);
             $css .= '
                 /* Border Radius */
                 .omp-button, 
@@ -199,9 +274,70 @@ class OMP_Theme_Customizer
                 .omp-invoice,
                 .omp-notice,
                 .omp-error {
-                    border-radius: ' . $border_radius . 'px !important;
+                    border-radius: var(--omp-border-radius) !important;
                 }
             ';
+        }
+
+        // RTL-specific styles
+        if ($is_rtl) {
+            $css .= '
+                /* RTL-specific styles */
+                .omp-order-table-container,
+                .omp-invoice {
+                    direction: rtl;
+                    text-align: right;
+                }
+                
+                .omp-actions-column {
+                    text-align: left;
+                }
+                
+                .omp-checkbox-column {
+                    text-align: right;
+                }
+                
+                .omp-export-filters label {
+                    margin-left: 20px;
+                    margin-right: 0;
+                }
+                
+                .omp-action-buttons {
+                    flex-direction: row-reverse;
+                }
+                
+                .omp-order-summary {
+                    justify-content: flex-start;
+                }
+            ';
+
+            // Add language-specific font stacks
+            $locale = get_locale();
+            if (strpos($locale, 'he_IL') !== false) {
+                $css .= '
+                    /* Hebrew font styles */
+                    .omp-order-table-container,
+                    .omp-invoice,
+                    .omp-button,
+                    .omp-modal input,
+                    .omp-modal textarea,
+                    .omp-modal select {
+                        font-family: Arial, sans-serif !important;
+                    }
+                ';
+            } elseif (strpos($locale, 'ar') === 0) {
+                $css .= '
+                    /* Arabic font styles */
+                    .omp-order-table-container,
+                    .omp-invoice,
+                    .omp-button,
+                    .omp-modal input,
+                    .omp-modal textarea,
+                    .omp-modal select {
+                        font-family: Tahoma, Arial, sans-serif !important;
+                    }
+                ';
+            }
         }
 
         // Get custom CSS from advanced settings
