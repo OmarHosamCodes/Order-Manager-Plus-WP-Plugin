@@ -6,9 +6,34 @@
      * Handle print button click
      */
     function handlePrintButton() {
-        $(".omp-print-button").on("click", (e) => {
+        $(".omp-print-button, .print-button").on("click", (e) => {
             e.preventDefault();
-            window.print();
+
+            // Get order ID from data attribute or URL parameter
+            let orderId = $(e.currentTarget).data("order-id");
+
+            if (!orderId) {
+                // Try to get from URL if we're already on an invoice page
+                const urlParams = new URLSearchParams(window.location.search);
+                orderId = urlParams.get('order_id');
+            }
+
+            if (!orderId) {
+                console.error('No order ID found for printing');
+                return;
+            }
+
+            // Check if we're already on the print page
+            if (window.location.href.includes('print_view=1')) {
+                // We're already on the print page, just print
+                window.print();
+                return;
+            }
+
+            // Redirect to print view
+            const baseUrl = window.location.href.split('?')[0];
+            const printUrl = `${baseUrl}?page=omp_view_invoice&order_id=${orderId}&print_view=1`;
+            window.open(printUrl, '_blank');
         });
     }
 

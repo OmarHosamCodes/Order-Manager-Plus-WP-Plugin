@@ -1,8 +1,9 @@
 <?php
 /**
- * Invoice Template
+ * Invoice Print Template
  * 
  * @package OrderManagerPlus
+ * A clean, full-width template specifically for printing
  */
 
 // Exit if accessed directly
@@ -10,78 +11,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Get plugin options
-$options = get_option('omp_settings', array());
-$theme_settings = get_option('omp_theme_settings', array());
-
-// Get the order
-$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
-$order = wc_get_order($order_id);
-
-// Check if this is print view
-$is_print_view = isset($_GET['print_view']) && $_GET['print_view'] == '1';
-
-if (!$order) {
-    echo '<div class="error">
-            <h2>' . esc_html__('Error', 'order-manager-plus') . '</h2>
-            <p>' . esc_html__('Invalid order ID.', 'order-manager-plus') . '</p>
-          </div>';
-    return;
-}
-
-// Get billing info
-$billing = $order->get_address('billing');
-$shipping = $order->get_address('shipping');
-
-// Get the company info from WordPress settings
-$company_name = get_bloginfo('name');
-$company_description = get_bloginfo('description');
-$company_logo_id = get_theme_mod('custom_logo');
-$company_logo_url = '';
-
-if ($company_logo_id) {
-    $company_logo_data = wp_get_attachment_image_src($company_logo_id, 'full');
-    if ($company_logo_data) {
-        $company_logo_url = $company_logo_data[0];
-    }
-}
-
-// Check for RTL direction
-$is_rtl = is_rtl();
-$dir_attribute = $is_rtl ? 'rtl' : 'ltr';
-
-// Get theme colors from settings
-$primary_color = !empty($theme_settings['primary_color']) ? $theme_settings['primary_color'] : '#2c3e50';
-$secondary_color = !empty($theme_settings['secondary_color']) ? $theme_settings['secondary_color'] : '#3498db';
-$success_color = !empty($theme_settings['success_color']) ? $theme_settings['success_color'] : '#27ae60';
-$danger_color = !empty($theme_settings['danger_color']) ? $theme_settings['danger_color'] : '#e74c3c';
-$border_radius = isset($theme_settings['border_radius']) ? absint($theme_settings['border_radius']) : 4;
-$font_family = !empty($theme_settings['font_family']) ? $theme_settings['font_family'] : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
-
-// Apply RTL specific font settings
-if ($is_rtl) {
-    // Common RTL font stacks
-    if (strpos(get_locale(), 'he_IL') !== false) {
-        $font_family = 'Arial, sans-serif';
-    } elseif (strpos(get_locale(), 'ar') === 0) {
-        $font_family = 'Tahoma, Arial, sans-serif';
-    }
-}
-
-// Allow theme customization through filter
-$theme_settings = apply_filters('omp_invoice_theme_settings', array(
-    'primary_color' => $primary_color,
-    'secondary_color' => $secondary_color,
-    'success_color' => $success_color,
-    'danger_color' => $danger_color,
-    'border_radius' => $border_radius,
-    'font_family' => $font_family,
-    'is_rtl' => $is_rtl
-));
-
-// If it's print view, use a special template focused just on the invoice
-if ($is_print_view) {
-    include_once(plugin_dir_path(__FILE__) . 'invoice-print-template.php');
+// This template should only be included from invoice-template.php
+if (!isset($order) || !isset($theme_settings)) {
     exit;
 }
 ?>
@@ -94,23 +25,27 @@ if ($is_print_view) {
     <title><?php echo esc_html__('Invoice', 'order-manager-plus'); ?>
         #<?php echo esc_html($order->get_order_number()); ?></title>
     <style>
-        #omp-body {
+        body {
             font-family:
                 <?php echo $theme_settings['font_family']; ?>
             ;
             color: #0f0f0f;
             line-height: 1.5;
-            max-width: 80%;
-            margin: 40px auto;
-            padding: 30px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border-radius:
-                <?php echo $theme_settings['border_radius']; ?>
-                px;
-            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
             direction:
                 <?php echo $dir_attribute; ?>
             ;
+            width: 100%;
+        }
+
+        #omp-body {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
         }
 
         h1,
@@ -131,6 +66,8 @@ if ($is_print_view) {
                 <?php echo $theme_settings['primary_color']; ?>
             ;
             padding-bottom: 15px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .company-info {
@@ -152,6 +89,8 @@ if ($is_print_view) {
 
         .info-section {
             margin-bottom: 30px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .info-grid {
@@ -206,12 +145,18 @@ if ($is_print_view) {
             background-color: #f8f9fa;
         }
 
+        .order-details {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
         .order-summary {
             display: flex;
             justify-content:
                 <?php echo $is_rtl ? 'flex-start' : 'flex-end'; ?>
             ;
             margin-bottom: 30px;
+            padding-right: 20px;
         }
 
         .summary-box {
@@ -241,106 +186,55 @@ if ($is_print_view) {
 
         .footer {
             margin-top: 40px;
-            padding-top: 20px;
+            padding: 20px;
             border-top: 1px solid #dee2e6;
             text-align: center;
             font-size: 14px;
             color: #666;
         }
 
-        .print-button {
-            /* Already prefixed in HTML, added here for consistency */
-            background-color:
-                <?php echo $theme_settings['primary_color']; ?>
-            ;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius:
-                <?php echo $theme_settings['border_radius']; ?>
-                px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 20px;
-            height: 50px;
-        }
-
-        .back-button {
-            background-color: transparent;
-            color:
-                <?php echo $theme_settings['primary_color']; ?>
-            ;
-            border: 2px solid
-                <?php echo $theme_settings['primary_color']; ?>
-            ;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            padding: 10px 20px;
-            border-radius:
-                <?php echo $theme_settings['border_radius']; ?>
-                px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 20px;
-            text-decoration: none;
-            height: 50px;
-            width: max-content;
-            margin-<?php echo $is_rtl ? 'left' : 'right'; ?>: 10px;
-        }
-
         @media print {
+            @page {
+                margin: 0;
+                size: auto;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+
             #omp-body {
-                box-shadow: none;
-                margin: 5px;
-                padding: 10px;
-                max-width: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
             }
 
             .no-print {
-                display: none;
+                display: none !important;
             }
 
-            body * {
-                visibility: hidden;
-            }
-
-            #omp-body,
-            #omp-body * {
-                visibility: visible;
-            }
-
-            #omp-body {
-                position: absolute;
-                left: 0;
-                top: 0;
+            html,
+            body {
+                width: 100%;
+                height: 100%;
             }
         }
     </style>
     <script>
-        function printInvoiceOnly() {
-            window.print();
+        // Auto-print functionality
+        window.onload = function () {
+            // Wait for all resources to load before printing
+            setTimeout(function () {
+                window.print();
+            }, 500);
         }
     </script>
 </head>
 
 <body>
-
     <section id="omp-body">
-        <div class="invoice-actions no-print">
-            <button class="print-button" onclick="printInvoiceOnly();">
-                <?php echo esc_html__('Print Invoice', 'order-manager-plus'); ?>
-            </button>
-            <button
-                onclick="window.location.href='<?php echo esc_url(admin_url('admin.php?page=omp_order_invoices')); ?>'"
-                class="back-button">
-                <?php echo esc_html__('Back to Invoices', 'order-manager-plus'); ?>
-            </button>
-        </div>
-
         <div class="invoice-header">
             <div class="company-info">
                 <?php if ($company_logo_url): ?>
@@ -358,9 +252,6 @@ if ($is_print_view) {
             <div class="invoice-info">
                 <h1><?php echo esc_html__('Invoice', 'order-manager-plus'); ?>
                     #<?php echo esc_html($order->get_order_number()); ?></h1>
-                <p><?php echo esc_html__('Date:', 'order-manager-plus'); ?>
-                    <?php echo esc_html($order->get_date_created()->date_i18n(get_option('date_format'))); ?>
-                </p>
             </div>
         </div>
 
@@ -408,29 +299,30 @@ if ($is_print_view) {
             </div>
         </div>
 
-        <h2><?php echo esc_html__('Order Details', 'order-manager-plus'); ?></h2>
+        <div class="order-details">
+            <h2><?php echo esc_html__('Order Details', 'order-manager-plus'); ?></h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th><?php echo esc_html__('Product', 'order-manager-plus'); ?></th>
-                    <th><?php echo esc_html__('Quantity', 'order-manager-plus'); ?></th>
-                    <th><?php echo esc_html__('Price', 'order-manager-plus'); ?></th>
-                    <th><?php echo esc_html__('Total', 'order-manager-plus'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($order->get_items() as $item): ?>
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo esc_html($item->get_name()); ?></td>
-                        <td><?php echo esc_html($item->get_quantity()); ?></td>
-                        <td><?php echo wp_kses_post(wc_price($order->get_item_subtotal($item, false, true))); // Price per item ?>
-                        </td>
-                        <td><?php echo wp_kses_post($order->get_formatted_line_subtotal($item)); // Total for line ?></td>
+                        <th><?php echo esc_html__('Product', 'order-manager-plus'); ?></th>
+                        <th><?php echo esc_html__('Quantity', 'order-manager-plus'); ?></th>
+                        <th><?php echo esc_html__('Price', 'order-manager-plus'); ?></th>
+                        <th><?php echo esc_html__('Total', 'order-manager-plus'); ?></th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($order->get_items() as $item): ?>
+                        <tr>
+                            <td><?php echo esc_html($item->get_name()); ?></td>
+                            <td><?php echo esc_html($item->get_quantity()); ?></td>
+                            <td><?php echo wp_kses_post(wc_price($order->get_item_subtotal($item, false, true))); ?></td>
+                            <td><?php echo wp_kses_post($order->get_formatted_line_subtotal($item)); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
         <div class="order-summary">
             <div class="summary-box">
