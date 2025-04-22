@@ -75,9 +75,11 @@ class OMP_Order_Table
             return array();
         }
 
-        $current_page = max(1, get_query_var('paged'));
-        if (!$current_page)
+        // Ensure we're getting the correct paged value from the request
+        $current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
+        if (!$current_page) {
             $current_page = 1;
+        }
 
         // Format statuses (WC_Order_Query expects them without 'wc-' prefix)
         $statuses = $this->settings['select_status'];
@@ -136,31 +138,31 @@ class OMP_Order_Table
             }
         }
 
-        // Get total count for pagination
-        $total_orders = 0;
+        // Get total count for pagination - using the most efficient method
+        global $wpdb;
 
-        // If we have orders, we can count them directly for simple cases
-        if (!empty($orders)) {
-            if (count($orders) < $this->settings['list_per_page']) {
-                // If we have fewer orders than the limit, that's our total
-                $total_orders = count($orders);
-            } else {
-                // Otherwise get a count using WC API
-                $count_args = array(
-                    'return' => 'ids',
-                    'limit' => -1,
-                );
-
-                // Only add status if we used it in the main query
-                if (isset($args['status'])) {
-                    $count_args['status'] = $args['status'];
-                }
-
-                $count_query = new WC_Order_Query($count_args);
-                $count_results = $count_query->get_orders();
-                $total_orders = count($count_results);
+        // Build SQL WHERE conditions for order statuses
+        $status_clauses = array();
+        if (isset($args['status']) && !empty($args['status'])) {
+            foreach ($args['status'] as $status) {
+                $status_clauses[] = $wpdb->prepare("post_status = %s", 'wc-' . $status);
             }
+            $status_sql = "AND (" . implode(' OR ', $status_clauses) . ")";
+        } else {
+            // If no specific statuses, get all WooCommerce order statuses
+            $wc_statuses = array_keys(wc_get_order_statuses());
+            $placeholders = implode(', ', array_fill(0, count($wc_statuses), '%s'));
+            $status_sql = $wpdb->prepare("AND post_status IN ($placeholders)", $wc_statuses);
         }
+
+        // Direct SQL query for accurate counting with large datasets
+        $total_orders = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(ID) 
+            FROM $wpdb->posts 
+            WHERE post_type = %s 
+            $status_sql",
+            'shop_order'
+        ));
 
         // Store results in object property
         $this->query_results = array(

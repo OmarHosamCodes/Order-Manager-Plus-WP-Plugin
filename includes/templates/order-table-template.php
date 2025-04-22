@@ -249,12 +249,22 @@ if ($is_rtl) {
 
         <div class="omp-pagination">
             <?php
-            $pagenum_link = get_pagenum_link(999999999) ?: '';
+            // Get the current URL with any existing query parameters
+            $current_url = add_query_arg(NULL, NULL);
+
+            // Remove any existing 'paged' parameter to create our base URL
+            $base_url = remove_query_arg('paged', $current_url);
+
+            // Add pagination
             echo paginate_links([
-                'base' => str_replace(999999999, '%#%', esc_url($pagenum_link)),
-                'format' => '?paged=%#%',
-                'current' => max(1, get_query_var('paged')),
+                'base' => $base_url . (strpos($base_url, '?') !== false ? '&' : '?') . 'paged=%#%',
+                'format' => '',
+                'current' => max(1, isset($_GET['paged']) ? intval($_GET['paged']) : 1),
                 'total' => $orders->max_num_pages,
+                'prev_text' => __('&laquo; Previous', 'order-manager-plus'),
+                'next_text' => __('Next &raquo;', 'order-manager-plus'),
+                'mid_size' => 2,
+                'end_size' => 1,
             ]);
             ?>
         </div>
