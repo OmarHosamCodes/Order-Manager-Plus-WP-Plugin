@@ -45,7 +45,7 @@ You can customize the shortcode with various attributes:
 
 | Attribute | Description | Default | Options |
 |-----------|-------------|---------|---------|
-| `list_per_page` | Number of orders per page | `10` | Any number (max 100) |
+| `list_per_page` | Number of orders per page | `10` | Any number (max 999) |
 | `select_status` | Order statuses to display | `wc-completed,wc-processing,wc-on-hold,wc-failed,wc-cancelled` | Comma-separated list of statuses |
 | `order_time_format` | Date format | `ago` | `ago`, `short`, `human` |
 | `order_by` | Sort direction | `desc` | `desc`, `asc` |

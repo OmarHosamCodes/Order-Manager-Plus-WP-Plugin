@@ -91,7 +91,7 @@
                             label: __("Orders Per Page", "order-manager-plus"),
                             value: attributes.list_per_page,
                             min: 1,
-                            max: 100,
+                            max: 999,
                             onChange: (value) => {
                                 props.setAttributes({ list_per_page: value });
                             },

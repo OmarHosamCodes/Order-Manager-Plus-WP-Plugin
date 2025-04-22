@@ -512,7 +512,7 @@ class OMP_Admin_Menu
         echo '<tr>';
         echo '<th scope="row">' . esc_html__('Default Rows Per Page', 'order-manager-plus') . '</th>';
         echo '<td>';
-        echo '<input type="number" name="omp_settings[table_per_page]" value="' . esc_attr(isset($options['table_per_page']) ? $options['table_per_page'] : 10) . '" min="5" max="100" step="5" />';
+        echo '<input type="number" name="omp_settings[table_per_page]" value="' . esc_attr(isset($options['table_per_page']) ? $options['table_per_page'] : 10) . '" min="5" max="999" step="5" />';
         echo '</td>';
         echo '</tr>';
 

@@ -48,6 +48,11 @@ class OMP_Order_Table
 
         $this->settings = wp_parse_args($settings, $defaults);
 
+        // Ensure list_per_page doesn't exceed the maximum
+        if (isset($this->settings['list_per_page']) && $this->settings['list_per_page'] > 999) {
+            $this->settings['list_per_page'] = 999;
+        }
+
         // Initialize query results with default values
         $this->query_results = array(
             'orders' => array(),
